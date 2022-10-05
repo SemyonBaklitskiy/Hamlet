@@ -27,13 +27,6 @@ struct string {
 void processor_of_errors(errors error, const char* function, const char* name, const int line, const char* fileName);
 
 /*!
-    \brief This function checks is file open
-    \param[in] FILE* stream - pointer to the stream of data
-    \return bool value - is file open
-*/
-bool file_is_open(FILE* stream);
-
-/*!
     \brief This function calculates size of file 
     \param[in] FILE* stream - pointer to the stream of data
     \return long unsigned int number - size of file
@@ -46,13 +39,6 @@ long unsigned int get_size(FILE* stream);
     \return unsigned int number - number of lines (strings)
 */
 unsigned int amount_of_strings(char* buffer);
-
-/*!
-    \brief This function puts pointers to begin of each line (string)
-    \param[in] char* buffer - array of chars (buffer)
-    \param[out] struct string* array - array of struct string
-*/
-void put_pointers(char* buffer, struct string* array);
 
 /*!
     \brief This function reads data from file and saves it to buffer
@@ -83,13 +69,6 @@ struct string** get_array(struct string* strings, unsigned int size);
     \return char* value - name of read file
 */
 char* get_name_stdin(const char* text);
-
-/*!
-    \brief This function matches letter with number
-    \param[in] const char c - letter
-    \return int value - number of letter or -1 if char c is not a letter
-*/
-int number_of_letter(const char c);
 
 /*!
     \brief This function compares two elements (two strings from begin) and returnes 1 if first > second, -1 if first < second and 0 if first == second

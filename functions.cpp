@@ -6,6 +6,18 @@
 #include <assert.h>
 #include "functions.h"
 
+/*!
+    \brief This function checks is file open
+    \param[in] FILE* stream - pointer to the stream of data
+    \return bool value - is file open
+*/
+static bool file_is_open(FILE* stream) {
+    if (stream == NULL) 
+        return false;
+
+    return true;   
+}
+
 long unsigned int get_size(FILE* stream) {
     if (stream == NULL) 
         processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
@@ -32,7 +44,12 @@ unsigned int amount_of_strings(char* buffer) {
     return amount + 1;
 }
 
-void put_pointers(char* buffer, struct string* array) {
+/*!
+    \brief This function puts pointers to begin of each line (string)
+    \param[in] char* buffer - array of chars (buffer)
+    \param[out] struct string* array - array of struct string
+*/
+static void put_pointers(char* buffer, struct string* array) {
     if (buffer ==  NULL || array == NULL) 
         processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
 
@@ -121,6 +138,22 @@ char* get_name_stdin(const char* text) {
     }
     
     return name;
+}
+
+/*!
+    \brief This function matches letter with number
+    \param[in] const char c - letter
+    \return int value - number of letter or -1 if char c is not a letter
+*/
+static int number_of_letter(const char c) {
+    const char letters[] = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+
+    for (int i = 0; letters[i] != '\0'; ++i) {
+        if (c == letters[i])
+            return i;
+    }
+
+    return -1;
 }
 
 int string_comparator_begin(const void* first, const void* second) {
@@ -240,24 +273,6 @@ void output(struct string** array, unsigned int size, const char* name) {
     }
 
     fclose(file);
-}
-
-bool file_is_open(FILE* stream) {
-    if (stream == NULL) 
-        return false;
-
-    return true;   
-}
-
-int number_of_letter(const char c) {
-    const char letters[] = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
-
-    for (int i = 0; letters[i] != '\0'; ++i) {
-        if (c == letters[i])
-            return i;
-    }
-
-    return -1;
 }
 
 void processor_of_errors(errors error, const char* function, const char* name, const int line, const char* fileName) {
