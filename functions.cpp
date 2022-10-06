@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include "functions.h"
+#define my_assert(condition, error) processor_of_errors(condition, error, __FILE__, __PRETTY_FUNCTION__, __LINE__)
 
 /*!
     \brief This function checks is file open
@@ -19,8 +20,7 @@ static bool file_is_open(FILE* stream) {
 }
 
 long unsigned int get_size(FILE* stream) {
-    if (stream == NULL) 
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(stream != NULL, NULLPTR);
 
     struct stat buf;
     fstat(stream->_fileno, &buf);
@@ -29,9 +29,7 @@ long unsigned int get_size(FILE* stream) {
 }
 
 unsigned int amount_of_strings(char* buffer) {
-    if (buffer == NULL)
-        
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(buffer != NULL, NULLPTR);
 
     unsigned int amount = 0; 
 
@@ -50,8 +48,7 @@ unsigned int amount_of_strings(char* buffer) {
     \param[out] struct string* array - array of struct string
 */
 static void put_pointers(char* buffer, struct string* array) {
-    if (buffer ==  NULL || array == NULL) 
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(array != NULL && buffer != NULL, NULLPTR);
 
     array[0].beginPtr = &buffer[0];
 
@@ -72,21 +69,17 @@ static void put_pointers(char* buffer, struct string* array) {
 }
 
 char* get_buffer(const char* name) {
-    if (name == NULL) {
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
-    }
+    my_assert(name != NULL, NULLPTR);
 
     FILE* file = fopen(name, "r");
 
-    if (!file_is_open(file)) 
-        processor_of_errors(FILEWASNTOPEN, __FILE__, __PRETTY_FUNCTION__, __LINE__, name);
+    my_assert(file_is_open(file), FILEWASNTOPEN);
 
     long unsigned int size = get_size(file);
 
     char* buffer = (char*)calloc(size + 1, sizeof(char));
 
-    if (buffer == NULL) 
-        processor_of_errors(RETURNEDNULL, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(buffer != NULL, RETURNEDNULL);
 
     fread(buffer, sizeof(char), size, file);
 
@@ -98,13 +91,11 @@ char* get_buffer(const char* name) {
 }
 
 struct string* get_strings(char* buffer, unsigned int size) {
-    if (buffer == NULL)
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(buffer != NULL, NULLPTR);
 
     struct string* strings = (string*)calloc(size, sizeof(string));
 
-    if (strings == NULL) 
-        processor_of_errors(RETURNEDNULL, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(strings != NULL, RETURNEDNULL);
 
     put_pointers(buffer, strings);
 
@@ -112,13 +103,11 @@ struct string* get_strings(char* buffer, unsigned int size) {
 }
 
 struct string** get_array(struct string* strings, unsigned int size) {
-    if (strings == NULL)
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(strings != NULL, NULLPTR);
 
     struct string** arrayPtr = (struct string**)calloc(size, sizeof(struct string*));
 
-    if (arrayPtr == NULL) 
-        processor_of_errors(RETURNEDNULL, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(arrayPtr != NULL, RETURNEDNULL);
 
     for (unsigned int i = 0; i < size; ++i) 
         arrayPtr[i] = &strings[i];
@@ -157,8 +146,7 @@ static int number_of_letter(const char c) {
 }
 
 int string_comparator_begin(const void* first, const void* second) {
-    if (first == NULL || second == NULL)
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(first != NULL && second != NULL, NULLPTR);
 
     char* str1 = (*((string**)first))->beginPtr;
     char* str2 = (*((string**)second))->beginPtr;
@@ -202,8 +190,7 @@ int string_comparator_begin(const void* first, const void* second) {
 }
 
 int string_comporator_end(const void* first, const void* second) {
-    if (first == NULL || second == NULL)
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL); 
+    my_assert(first != NULL && second != NULL, NULLPTR); 
 
     char* str1 = (*((string**)first))->beginPtr;
     char* str2 = (*((string**)second))->beginPtr;
@@ -255,13 +242,12 @@ int string_comporator_end(const void* first, const void* second) {
 }
 
 void output(struct string** array, unsigned int size, const char* name) {
-    if (array == NULL || name == NULL)
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(array != NULL && name != NULL, NULLPTR);
 
     FILE* file = fopen(name, "w");
 
-    if (!file_is_open(file)) 
-        processor_of_errors(FILEWASNTOPEN, __FILE__, __PRETTY_FUNCTION__, __LINE__, name);
+    
+    my_assert(file_is_open(file), FILEWASNTOPEN);
 
     for (unsigned int i = 0; i < size; ++i) {
         for (unsigned int j = 0; j < array[i]->length; ++j) {
@@ -275,7 +261,11 @@ void output(struct string** array, unsigned int size, const char* name) {
     fclose(file);
 }
 
-void processor_of_errors(errors error, const char* function, const char* name, const int line, const char* fileName) {
+void processor_of_errors(bool condition, errors error, const char* function, const char* name, const int line) { 
+    if (condition != 0) {
+        return;
+    }
+    
     switch (error) {
 
     case RETURNEDNULL:
@@ -284,7 +274,7 @@ void processor_of_errors(errors error, const char* function, const char* name, c
         break;
 
     case FILEWASNTOPEN:
-        printf("In file %s function %s line %d: file %s wasn`t open, programm finished\n", function, name, line, fileName);
+        printf("In file %s function %s line %d: file wasn`t open, programm finished\n", function, name, line);
         break;
 
     case NULLPTR:
@@ -296,6 +286,9 @@ void processor_of_errors(errors error, const char* function, const char* name, c
     }
 
     assert(0); 
+    
+
+    
 }
 
 

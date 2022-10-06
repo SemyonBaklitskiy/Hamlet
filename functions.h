@@ -17,14 +17,14 @@ struct string {
 };
 
 /*!
-    \brief This function handles the errors and stop the programm if necessary
+    \brief This function handles the errors and stop the program if necessary
+    \param[in] bool condition - condition to stop or continue the program
     \param[in] errors error - type of error
     \param[in] const char* function - name of file where error happened
     \param[in] const char* name - name of function where error happened
-    \param[in] const int line - line where error happened
-    \param[in] const char* fileName - name of file with error 
+    \param[in] const int line - line where error happened 
 */
-void processor_of_errors(errors error, const char* function, const char* name, const int line, const char* fileName);
+void processor_of_errors(bool condition, errors error, const char* function, const char* name, const int line);
 
 /*!
     \brief This function calculates size of file 

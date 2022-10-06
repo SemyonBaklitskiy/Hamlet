@@ -1,6 +1,6 @@
 #include "sort.h"
 #include "functions.h"
-
+#define my_assert(condition, error) processor_of_errors(condition, error, __FILE__, __PRETTY_FUNCTION__, __LINE__)
 
 /*!
     \brief This function swaps two elements
@@ -9,8 +9,7 @@
     \param[in] unsigned int sizeBytes - size of each element in bytes
 */
 static void swap(void* element1, void* element2, unsigned int sizeBytes) {
-    if (element1 == NULL || element2 == NULL)
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(element1 != NULL && element2 != NULL, NULLPTR);
 
     char* a = (char*)element1;
     char* b = (char*)element2;
@@ -32,8 +31,7 @@ static void swap(void* element1, void* element2, unsigned int sizeBytes) {
     \param[in] int (*comparator) - pointer to a comare function
 */
 static int partition(void* array, int start, int end, unsigned int sizeBytes, int (*comparator)(const void*, const void*)) {
-    if (array == NULL)
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(array != NULL, NULLPTR);
 
     void* pivot = array + end * sizeBytes;
     int pIndex = start;
@@ -51,8 +49,7 @@ static int partition(void* array, int start, int end, unsigned int sizeBytes, in
 }
 
 void my_sort(void* array, int start, int end, unsigned int sizeBytes, int (*comparator)(const void*, const void*)) {
-    if (array == NULL)
-        processor_of_errors(NULLPTR, __FILE__, __PRETTY_FUNCTION__, __LINE__, NULL);
+    my_assert(array != NULL, NULLPTR);
     
     if (start >= end) {
         return;
